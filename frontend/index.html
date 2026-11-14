@@ -20,7 +20,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <!-- Custom Studio CSS -->
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -42,37 +42,37 @@
     
     <nav class="sidebar-nav">
       <div class="nav-label">Core Studio</div>
-      <a class="nav-item active" data-view="dashboard">
+      <a class="nav-item active" data-view="dashboard" href="javascript:void(0)" onclick="switchView('dashboard')">
         <i class="fa-solid fa-chart-line"></i>
         <span>Home Dashboard</span>
       </a>
-      <a class="nav-item" data-view="upload">
+      <a class="nav-item" data-view="upload" href="javascript:void(0)" onclick="switchView('upload')">
         <i class="fa-solid fa-cloud-arrow-up"></i>
         <span>Upload Dataset</span>
       </a>
-      <a class="nav-item" data-view="preprocess">
+      <a class="nav-item" data-view="preprocess" href="javascript:void(0)" onclick="switchView('preprocess')">
         <i class="fa-solid fa-sliders"></i>
         <span>Data Preprocessing</span>
       </a>
-      <a class="nav-item" data-view="train">
+      <a class="nav-item" data-view="train" href="javascript:void(0)" onclick="switchView('train')">
         <i class="fa-solid fa-brain"></i>
         <span>Train AI Model</span>
       </a>
-      <a class="nav-item" data-view="generate">
+      <a class="nav-item" data-view="generate" href="javascript:void(0)" onclick="switchView('generate')">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
         <span>Generate Music</span>
       </a>
       
       <div class="nav-label">Output & Playback</div>
-      <a class="nav-item" data-view="player">
+      <a class="nav-item" data-view="player" href="javascript:void(0)" onclick="switchView('player')">
         <i class="fa-solid fa-circle-play"></i>
         <span>Music Player</span>
       </a>
-      <a class="nav-item" data-view="history">
+      <a class="nav-item" data-view="history" href="javascript:void(0)" onclick="switchView('history')">
         <i class="fa-solid fa-clock-rotate-left"></i>
         <span>Download History</span>
       </a>
-      <a class="nav-item" data-view="about">
+      <a class="nav-item" data-view="about" href="javascript:void(0)" onclick="switchView('about')">
         <i class="fa-solid fa-circle-info"></i>
         <span>About Project</span>
       </a>
@@ -849,7 +849,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- Custom Application Scripts -->
-<script src="/js/app.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 </html>
