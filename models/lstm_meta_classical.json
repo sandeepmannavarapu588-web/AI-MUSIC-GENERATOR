@@ -1,0 +1,30 @@
+{
+  "genre": "classical",
+  "epochs_completed": 5,
+  "final_loss": 3.2066140409218753,
+  "loss_history": [
+    {
+      "epoch": 1,
+      "loss": 3.4762
+    },
+    {
+      "epoch": 2,
+      "loss": 3.316
+    },
+    {
+      "epoch": 3,
+      "loss": 3.2433
+    },
+    {
+      "epoch": 4,
+      "loss": 3.2111
+    },
+    {
+      "epoch": 5,
+      "loss": 3.2066
+    }
+  ],
+  "vocab_size": 34,
+  "engine": "NativeLSTM",
+  "updated_at": "2026-11-14 10:57:32"
+}

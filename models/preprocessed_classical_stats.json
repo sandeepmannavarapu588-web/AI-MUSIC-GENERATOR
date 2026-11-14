@@ -1,0 +1,63 @@
+{
+  "genre": "classical",
+  "files_processed_count": 3,
+  "files": [
+    "classical_bach_invention.mid",
+    "classical_mozart_melody.mid",
+    "classical_ode_theme.mid"
+  ],
+  "total_tokens": 114,
+  "unique_tokens": 34,
+  "sequence_length": 16,
+  "total_sequences": 98,
+  "top_tokens": [
+    {
+      "token": "N_E4_1.0",
+      "count": 14
+    },
+    {
+      "token": "N_D4_1.0",
+      "count": 11
+    },
+    {
+      "token": "N_G4_1.0",
+      "count": 9
+    },
+    {
+      "token": "N_C4_1.0",
+      "count": 7
+    },
+    {
+      "token": "N_E4_0.5",
+      "count": 6
+    },
+    {
+      "token": "N_F4_0.5",
+      "count": 6
+    },
+    {
+      "token": "N_F4_1.0",
+      "count": 6
+    },
+    {
+      "token": "N_C5_1.0",
+      "count": 5
+    },
+    {
+      "token": "N_D4_0.5",
+      "count": 4
+    },
+    {
+      "token": "N_C4_2.0",
+      "count": 4
+    },
+    {
+      "token": "N_E5_1.0",
+      "count": 4
+    },
+    {
+      "token": "N_C4_0.5",
+      "count": 3
+    }
+  ]
+}

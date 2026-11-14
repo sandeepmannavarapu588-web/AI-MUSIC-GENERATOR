@@ -1,0 +1,62 @@
+{
+  "genre": "jazz",
+  "files_processed_count": 2,
+  "files": [
+    "jazz_autumn_breeze.mid",
+    "jazz_midnight_groove.mid"
+  ],
+  "total_tokens": 23,
+  "unique_tokens": 19,
+  "sequence_length": 16,
+  "total_sequences": 7,
+  "top_tokens": [
+    {
+      "token": "N_D5_1.0",
+      "count": 2
+    },
+    {
+      "token": "C_55.59.62.65_2.0",
+      "count": 2
+    },
+    {
+      "token": "N_C5_1.0",
+      "count": 2
+    },
+    {
+      "token": "N_A4_1.0",
+      "count": 2
+    },
+    {
+      "token": "C_62.65.69.72_2.0",
+      "count": 1
+    },
+    {
+      "token": "N_E5_1.0",
+      "count": 1
+    },
+    {
+      "token": "N_B4_1.0",
+      "count": 1
+    },
+    {
+      "token": "C_60.64.67.71_3.0",
+      "count": 1
+    },
+    {
+      "token": "C_53.57.60.64_2.0",
+      "count": 1
+    },
+    {
+      "token": "N_G4_1.0",
+      "count": 1
+    },
+    {
+      "token": "N_F4_1.0",
+      "count": 1
+    },
+    {
+      "token": "C_59.62.65.69_2.0",
+      "count": 1
+    }
+  ]
+}

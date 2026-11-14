@@ -1,0 +1,63 @@
+{
+  "genre": "instrumental",
+  "files_processed_count": 3,
+  "files": [
+    "instrumental_acoustic_horizon.mid",
+    "instrumental_celtic_journey.mid",
+    "instrumental_pastoral_morning.mid"
+  ],
+  "total_tokens": 73,
+  "unique_tokens": 26,
+  "sequence_length": 16,
+  "total_sequences": 57,
+  "top_tokens": [
+    {
+      "token": "N_A4_1.0",
+      "count": 11
+    },
+    {
+      "token": "N_B4_1.0",
+      "count": 7
+    },
+    {
+      "token": "N_C5_1.0",
+      "count": 6
+    },
+    {
+      "token": "N_D5_1.0",
+      "count": 6
+    },
+    {
+      "token": "N_G4_1.0",
+      "count": 4
+    },
+    {
+      "token": "N_B4_2.0",
+      "count": 3
+    },
+    {
+      "token": "N_D5_2.0",
+      "count": 3
+    },
+    {
+      "token": "N_A4_2.0",
+      "count": 3
+    },
+    {
+      "token": "N_E4_1.0",
+      "count": 3
+    },
+    {
+      "token": "N_D4_1.0",
+      "count": 3
+    },
+    {
+      "token": "N_F#4_1.0",
+      "count": 3
+    },
+    {
+      "token": "N_E5_2.0",
+      "count": 2
+    }
+  ]
+}

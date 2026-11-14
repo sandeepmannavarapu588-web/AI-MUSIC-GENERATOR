@@ -1,0 +1,34 @@
+{
+  "genre": "instrumental",
+  "epochs_completed": 6,
+  "final_loss": 3.056744908161933,
+  "loss_history": [
+    {
+      "epoch": 1,
+      "loss": 3.259
+    },
+    {
+      "epoch": 2,
+      "loss": 3.201
+    },
+    {
+      "epoch": 3,
+      "loss": 3.1625
+    },
+    {
+      "epoch": 4,
+      "loss": 3.125
+    },
+    {
+      "epoch": 5,
+      "loss": 3.0871
+    },
+    {
+      "epoch": 6,
+      "loss": 3.0567
+    }
+  ],
+  "vocab_size": 26,
+  "engine": "NativeLSTM",
+  "updated_at": "2026-11-14 10:57:59"
+}

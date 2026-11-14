@@ -1,0 +1,34 @@
+{
+  "genre": "jazz",
+  "epochs_completed": 6,
+  "final_loss": 2.0117955590944154,
+  "loss_history": [
+    {
+      "epoch": 1,
+      "loss": 2.9412
+    },
+    {
+      "epoch": 2,
+      "loss": 2.8138
+    },
+    {
+      "epoch": 3,
+      "loss": 2.6016
+    },
+    {
+      "epoch": 4,
+      "loss": 2.263
+    },
+    {
+      "epoch": 5,
+      "loss": 2.0804
+    },
+    {
+      "epoch": 6,
+      "loss": 2.0118
+    }
+  ],
+  "vocab_size": 19,
+  "engine": "NativeLSTM",
+  "updated_at": "2026-11-14 10:57:58"
+}

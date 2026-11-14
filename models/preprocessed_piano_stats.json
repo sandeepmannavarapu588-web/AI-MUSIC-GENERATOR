@@ -1,0 +1,63 @@
+{
+  "genre": "piano",
+  "files_processed_count": 3,
+  "files": [
+    "piano_nocturne_dreams.mid",
+    "piano_tranquil_stream.mid",
+    "piano_waltz_in_am.mid"
+  ],
+  "total_tokens": 53,
+  "unique_tokens": 39,
+  "sequence_length": 16,
+  "total_sequences": 37,
+  "top_tokens": [
+    {
+      "token": "N_E5_2.0",
+      "count": 4
+    },
+    {
+      "token": "N_E4_0.5",
+      "count": 3
+    },
+    {
+      "token": "N_C4_0.5",
+      "count": 2
+    },
+    {
+      "token": "N_G4_0.5",
+      "count": 2
+    },
+    {
+      "token": "N_B4_0.5",
+      "count": 2
+    },
+    {
+      "token": "N_D4_0.5",
+      "count": 2
+    },
+    {
+      "token": "N_E4_2.0",
+      "count": 2
+    },
+    {
+      "token": "N_A4_0.5",
+      "count": 2
+    },
+    {
+      "token": "N_B4_1.0",
+      "count": 2
+    },
+    {
+      "token": "N_D5_2.0",
+      "count": 2
+    },
+    {
+      "token": "N_C5_1.0",
+      "count": 2
+    },
+    {
+      "token": "N_C5_2.0",
+      "count": 1
+    }
+  ]
+}
