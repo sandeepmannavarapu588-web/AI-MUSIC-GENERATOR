@@ -38,17 +38,21 @@ audio_converter = AudioConverter(BASE_DIR)
 # ==========================================
 @app.route("/")
 def index():
+    if os.path.exists(os.path.join(BASE_DIR, "index.html")):
+        return send_from_directory(BASE_DIR, "index.html")
     return send_from_directory(app.static_folder, "index.html")
 
 
 @app.route("/css/<path:filename>")
 def serve_css(filename):
-    return send_from_directory(os.path.join(app.static_folder, "css"), filename)
+    css_dir = os.path.join(BASE_DIR, "css") if os.path.exists(os.path.join(BASE_DIR, "css")) else os.path.join(app.static_folder, "css")
+    return send_from_directory(css_dir, filename)
 
 
 @app.route("/js/<path:filename>")
 def serve_js(filename):
-    return send_from_directory(os.path.join(app.static_folder, "js"), filename)
+    js_dir = os.path.join(BASE_DIR, "js") if os.path.exists(os.path.join(BASE_DIR, "js")) else os.path.join(app.static_folder, "js")
+    return send_from_directory(js_dir, filename)
 
 
 # ==========================================

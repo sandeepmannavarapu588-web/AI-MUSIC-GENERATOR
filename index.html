@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Music Generator Using Deep Learning (LSTM)</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Studio CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- ==========================================
+       SIDEBAR NAVIGATION
+       ========================================== -->
+  <aside class="app-sidebar" id="appSidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">
+        <i class="fa-solid fa-music"></i>
+      </div>
+      <div class="logo-text">
+        <h1>AI Music Studio</h1>
+        <p>Deep Learning LSTM</p>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-label">Core Studio</div>
+      <a class="nav-item active" data-view="dashboard">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Home Dashboard</span>
+      </a>
+      <a class="nav-item" data-view="upload">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <span>Upload Dataset</span>
+      </a>
+      <a class="nav-item" data-view="preprocess">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Data Preprocessing</span>
+      </a>
+      <a class="nav-item" data-view="train">
+        <i class="fa-solid fa-brain"></i>
+        <span>Train AI Model</span>
+      </a>
+      <a class="nav-item" data-view="generate">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>Generate Music</span>
+      </a>
+      
+      <div class="nav-label">Output & Playback</div>
+      <a class="nav-item" data-view="player">
+        <i class="fa-solid fa-circle-play"></i>
+        <span>Music Player</span>
+      </a>
+      <a class="nav-item" data-view="history">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Download History</span>
+      </a>
+      <a class="nav-item" data-view="about">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>About Project</span>
+      </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="system-badge">
+        <span class="pulse-dot"></span>
+        <span id="engineBadge">Engine: LSTM Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==========================================
+       MAIN CONTENT WRAPPER
+       ========================================== -->
+  <div class="main-wrapper">
+    
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar">
+      <div class="d-flex align-items-center">
+        <button class="sidebar-toggle-btn" id="sidebarToggle">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="top-title">
+          <h2 id="currentViewTitle"><i class="fa-solid fa-chart-line text-info"></i> Home Dashboard</h2>
+        </div>
+      </div>
+      
+      <div class="top-actions">
+        <!-- Mini Player Track Bar -->
+        <div class="topbar-player" id="topbarPlayer" style="cursor: pointer;">
+          <div class="equalizer" id="topbarEqualizer">
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+          </div>
+          <span id="topbarTrackName" class="text-truncate" style="max-width: 160px;">No track playing</span>
+        </div>
+        
+        <button class="btn-studio btn-primary-gradient btn-sm-studio" id="btnQuickGenerate">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Quick Generate
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY (8 VIEWS) -->
+    <main class="content-body">
+      
+      <!-- ==========================================
+           PAGE 1: HOME DASHBOARD
+           ========================================== -->
+      <section class="page-view active" id="view-dashboard">
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+          <h2>AI Music Generation Studio</h2>
+          <p>
+            An intelligent neural composition system trained on Classical, Jazz, Piano, and Instrumental MIDI datasets. 
+            Extracts harmonic sequences using music21 and synthesizes original musical themes with Long Short-Term Memory (LSTM) recurrent networks.
+          </p>
+          <div class="d-flex gap-3">
+            <button class="btn-studio btn-primary-gradient" onclick="switchView('generate')">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Create New Music
+            </button>
+            <button class="btn-studio btn-outline-studio" onclick="switchView('train')">
+              <i class="fa-solid fa-brain"></i> Train AI Network
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon purple"><i class="fa-solid fa-file-audio"></i></div>
+            <div class="stat-info">
+              <p>Dataset MIDI Files</p>
+              <h3 id="statTotalMidis">12</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="stat-info">
+              <p>Trained Models</p>
+              <h3 id="statTrainedModels">1</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon cyan"><i class="fa-solid fa-compact-disc"></i></div>
+            <div class="stat-info">
+              <p>Generated Music</p>
+              <h3 id="statGeneratedCount">0</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon pink"><i class="fa-solid fa-bolt"></i></div>
+            <div class="stat-info">
+              <p>Network Status</p>
+              <h3 id="statModelStatus" style="font-size: 1.25rem;">Ready</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loss Chart & Recent Tracks Grid -->
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="studio-card h-100">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-chart-area text-info"></i> Neural Network Training Loss Curve
+                </div>
+                <span class="badge-studio badge-piano" id="dashLossBadge">Live Curve</span>
+              </div>
+              <div style="height: 280px; position: relative;">
+                <canvas id="dashLossChart"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-5">
+            <div class="studio-card h-100">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-music text-primary"></i> Recent Generated Music
+                </div>
+                <button class="btn-studio btn-outline-studio btn-sm-studio" onclick="switchView('history')">
+                  View All
+                </button>
+              </div>
+              <div id="dashRecentTracks" class="d-flex flex-column gap-2">
+                <div class="text-center text-muted py-5">
+                  <i class="fa-solid fa-music fa-2x mb-2 text-secondary"></i>
+                  <p>No tracks generated yet. Click "Quick Generate" to compose!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PAGE 2: UPLOAD MIDI DATASET
+           ========================================== -->
+      <section class="page-view" id="view-upload">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <div class="studio-card">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-cloud-arrow-up text-primary"></i> Upload MIDI File
+                </div>
+              </div>
+              
+              <div class="studio-form-group">
+                <label class="studio-form-label">Target Musical Genre</label>
+                <select class="studio-select" id="uploadGenreSelect">
+                  <option value="piano" selected>Piano Solo & Nocturne</option>
+                  <option value="classical">Classical Symphony & Sonatas</option>
+                  <option value="jazz">Jazz Harmony & Swing</option>
+                  <option value="instrumental">Instrumental & Strings</option>
+                </select>
+              </div>
+
+              <!-- Drag & Drop Zone -->
+              <div class="dropzone-studio" id="midiDropzone">
+                <i class="fa-solid fa-file-audio dropzone-icon"></i>
+                <h5 class="fw-bold mb-1">Drag and drop MIDI file here</h5>
+                <p class="text-muted small mb-3">Accepts standard .mid or .midi files</p>
+                <input type="file" id="midiFileInput" accept=".mid,.midi" style="display: none;">
+                <button class="btn-studio btn-outline-studio btn-sm-studio" onclick="document.getElementById('midiFileInput').click()">
+                  Browse Files
+                </button>
+              </div>
+
+              <div id="uploadFileInfo" class="mt-3 p-3 bg-dark rounded border border-secondary" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong id="uploadFileName">filename.mid</strong>
+                    <div class="text-muted small" id="uploadFileSize">0 KB</div>
+                  </div>
+                  <button class="btn-studio btn-primary-gradient btn-sm-studio" id="btnConfirmUpload">
+                    <i class="fa-solid fa-upload"></i> Upload & Validate
+                  </button>
+                </div>
+                <div class="progress mt-2" id="uploadProgressBar" style="height: 6px; display: none;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 100%"></div>
+                </div>
+              </div>
+
+              <div id="uploadAlert" class="mt-3" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="studio-card">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-database text-info"></i> Dataset Collection Explorer
+                </div>
+                <button class="btn-studio btn-outline-studio btn-sm-studio" onclick="loadDatasets()">
+                  <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+              </div>
+              <p class="text-muted small mb-3">Explore existing training datasets across genres with extracted tempo, instrument, and note counts.</p>
+              
+              <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                <table class="studio-table">
+                  <thead>
+                    <tr>
+                      <th>Filename</th>
+                      <th>Genre</th>
+                      <th>Notes</th>
+                      <th>Duration</th>
+                      <th>Tempo</th>
+                      <th>Size</th>
+                    </tr>
+                  </thead>
+                  <tbody id="datasetsTableBody">
+                    <tr><td colspan="6" class="text-center text-muted">Loading datasets...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PAGE 3: DATA PREPROCESSING
+           ========================================== -->
+      <section class="page-view" id="view-preprocess">
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="studio-card">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-sliders text-warning"></i> Preprocessing Pipeline
+                </div>
+              </div>
+              <p class="text-muted small mb-3">
+                Parses raw MIDI streams with <code>music21</code>, extracts pitch, duration, and chord representations, and maps them to numerical tokens.
+              </p>
+
+              <div class="studio-form-group">
+                <label class="studio-form-label">Select Dataset Genre</label>
+                <select class="studio-select" id="prepGenreSelect">
+                  <option value="piano" selected>Piano</option>
+                  <option value="classical">Classical</option>
+                  <option value="jazz">Jazz</option>
+                  <option value="instrumental">Instrumental</option>
+                  <option value="all">All Genres Combined</option>
+                </select>
+              </div>
+
+              <div class="studio-form-group">
+                <label class="studio-form-label">
+                  Sequence Window Length
+                  <span class="badge-val" id="prepSeqLenVal">16 notes</span>
+                </label>
+                <input type="range" class="studio-range" id="prepSeqLenRange" min="8" max="64" step="4" value="16">
+              </div>
+
+              <button class="btn-studio btn-primary-gradient w-100" id="btnRunPreprocess">
+                <i class="fa-solid fa-gears"></i> Run Note Preprocessor
+              </button>
+
+              <div id="prepAlert" class="mt-3" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="col-lg-8">
+            <div class="studio-card">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-chart-pie text-cyan"></i> Vocabulary & Token Distribution
+                </div>
+                <span class="badge-studio badge-piano" id="prepStatsBadge">Status: Ready</span>
+              </div>
+
+              <!-- Metric counters -->
+              <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                  <div class="p-3 bg-dark rounded border border-secondary text-center">
+                    <div class="text-muted small">Total Tokens</div>
+                    <h4 class="fw-bold text-info mb-0" id="prepTotalTokens">--</h4>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-dark rounded border border-secondary text-center">
+                    <div class="text-muted small">Unique Vocabulary</div>
+                    <h4 class="fw-bold text-primary mb-0" id="prepUniqueTokens">--</h4>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-dark rounded border border-secondary text-center">
+                    <div class="text-muted small">Training Sequences</div>
+                    <h4 class="fw-bold text-success mb-0" id="prepTotalSequences">--</h4>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Top Tokens Chart -->
+              <div style="height: 240px; position: relative;">
+                <canvas id="prepTokensChart"></canvas>
+              </div>
+
+              <!-- Token Preview List -->
+              <div class="mt-4">
+                <h6 class="fw-bold text-secondary mb-2">Token Samples (Pitch & Duration Format):</h6>
+                <div id="prepTokensList" class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-secondary">Run preprocessing to view tokens</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PAGE 4: TRAIN AI MODEL
+           ========================================== -->
+      <section class="page-view" id="view-train">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <div class="studio-card">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-brain text-purple"></i> LSTM Training Hyperparameters
+                </div>
+              </div>
+              <p class="text-muted small mb-3">
+                Train an LSTM neural network with recurrent memory cells, forget gates, and Adam optimizer.
+              </p>
+
+              <div class="studio-form-group">
+                <label class="studio-form-label">Training Genre</label>
+                <select class="studio-select" id="trainGenreSelect">
+                  <option value="piano" selected>Piano Solo</option>
+                  <option value="classical">Classical</option>
+                  <option value="jazz">Jazz</option>
+                  <option value="instrumental">Instrumental</option>
+                  <option value="all">All Genres</option>
+                </select>
+              </div>
+
+              <div class="studio-form-group">
+                <label class="studio-form-label">
+                  Training Epochs
+                  <span class="badge-val" id="trainEpochsVal">30 epochs</span>
+                </label>
+                <input type="range" class="studio-range" id="trainEpochsRange" min="5" max="100" step="5" value="30">
+              </div>
+
+              <div class="row g-3">
+                <div class="col-6">
+                  <div class="studio-form-group">
+                    <label class="studio-form-label">Batch Size</label>
+                    <select class="studio-select" id="trainBatchSize">
+                      <option value="4">4</option>
+                      <option value="8" selected>8</option>
+                      <option value="16">16</option>
+                      <option value="32">32</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="studio-form-group">
+                    <label class="studio-form-label">Learning Rate</label>
+                    <select class="studio-select" id="trainLearningRate">
+                      <option value="0.01">0.01 (Fast)</option>
+                      <option value="0.005" selected>0.005 (Standard)</option>
+                      <option value="0.001">0.001 (Fine-tune)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 mt-2">
+                <button class="btn-studio btn-primary-gradient flex-grow-1" id="btnStartTrain">
+                  <i class="fa-solid fa-play"></i> Start LSTM Training
+                </button>
+                <button class="btn-studio btn-danger-studio" id="btnStopTrain" style="display: none;">
+                  <i class="fa-solid fa-stop"></i> Stop
+                </button>
+              </div>
+
+              <!-- Live Progress Card -->
+              <div id="trainProgressCard" class="mt-4 p-3 bg-dark rounded border border-secondary" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="fw-bold small" id="trainStatusText">Initializing...</span>
+                  <span class="badge bg-primary" id="trainProgressPercent">0%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" id="trainProgressBar" style="width: 0%"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted small">
+                  <span>Current Loss: <strong id="trainCurrentLoss" class="text-white">0.00</strong></span>
+                  <span id="trainEpochCounter">Epoch 0 / 30</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="studio-card h-100">
+              <div class="card-header-studio">
+                <div class="card-title-studio">
+                  <i class="fa-solid fa-chart-line text-cyan"></i> Real-Time Training Loss Monitor
+                </div>
+                <button class="btn-studio btn-outline-studio btn-sm-studio" id="btnResetChart">
+                  <i class="fa-solid fa-eraser"></i> Clear Graph
+                </button>
+              </div>
+              <div style="height: 340px; position: relative;">
+                <canvas id="trainLossChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PAGE 5: GENERATE MUSIC
+           ========================================== -->
+      <section class="page-view" id="view-generate">
+        <div class="studio-card mb-4">
+          <div class="card-header-studio">
+            <div class="card-title-studio">
+              <i class="fa-solid fa-wand-magic-sparkles text-primary"></i> AI Music Generation Studio
+            </div>
+            <span class="badge-studio badge-piano">Temperature Sampling</span>
+          </div>
+          <p class="text-secondary small mb-4">
+            Select your desired musical genre, configure sequence length, and dial in the temperature parameter to control creativity.
+          </p>
+
+          <!-- Genre Choice Cards -->
+          <div class="genre-cards-grid">
+            <div class="genre-choice-card selected" data-genre="piano">
+              <span class="genre-icon">🎹</span>
+              <h4>Piano Solo</h4>
+              <p>Expressive chords, tranquil nocturnes & waltzes</p>
+            </div>
+            <div class="genre-choice-card" data-genre="classical">
+              <span class="genre-icon">🎻</span>
+              <h4>Classical</h4>
+              <p>Sonata movements, counterpoints & symphonies</p>
+            </div>
+            <div class="genre-choice-card" data-genre="jazz">
+              <span class="genre-icon">🎷</span>
+              <h4>Jazz</h4>
+              <p>Swing rhythms, 7th chords & blues motifs</p>
+            </div>
+            <div class="genre-choice-card" data-genre="instrumental">
+              <span class="genre-icon">🎸</span>
+              <h4>Instrumental</h4>
+              <p>Acoustic strings, flute pastoral themes & folk</p>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <!-- Length Slider -->
+            <div class="col-md-4">
+              <div class="studio-form-group">
+                <label class="studio-form-label">
+                  Sequence Length (Notes)
+                  <span class="badge-val" id="genLengthVal">60 notes</span>
+                </label>
+                <input type="range" class="studio-range" id="genLengthRange" min="30" max="200" step="10" value="60">
+                <div class="text-muted small mt-1">Approx. 20 - 45 seconds of music</div>
+              </div>
+            </div>
+
+            <!-- Temperature Slider -->
+            <div class="col-md-4">
+              <div class="studio-form-group">
+                <label class="studio-form-label">
+                  Creativity / Temperature
+                  <span class="badge-val" id="genTempVal">0.8</span>
+                </label>
+                <input type="range" class="studio-range" id="genTempRange" min="0.2" max="1.5" step="0.1" value="0.8">
+                <div class="text-muted small mt-1" id="genTempDesc">Balanced: harmonious with pleasant variations</div>
+              </div>
+            </div>
+
+            <!-- Tempo Slider -->
+            <div class="col-md-4">
+              <div class="studio-form-group">
+                <label class="studio-form-label">
+                  Tempo (BPM)
+                  <span class="badge-val" id="genTempoVal">110 BPM</span>
+                </label>
+                <input type="range" class="studio-range" id="genTempoRange" min="60" max="160" step="5" value="110">
+                <div class="text-muted small mt-1">Moderato (standard tempo)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Generate Action Button -->
+          <div class="text-center mt-3">
+            <button class="btn-studio btn-primary-gradient px-5 py-3 fs-5" id="btnGenerateMusic">
+              <i class="fa-solid fa-music"></i> Generate AI Music Track
+            </button>
+          </div>
+
+          <!-- Loading State -->
+          <div id="genLoadingState" class="text-center py-5" style="display: none;">
+            <div class="spinner-border text-info mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
+            <h5 class="fw-bold">Generating Neural Sequence...</h5>
+            <p class="text-muted small">Predicting musical tokens, converting to MIDI, and synthesizing audio with FluidSynth...</p>
+          </div>
+        </div>
+
+        <!-- Generation Result Card -->
+        <div id="genResultCard" class="studio-card studio-card-glow" style="display: none;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-success mb-0">
+              <i class="fa-solid fa-circle-check"></i> Generation Complete!
+            </h4>
+            <span class="badge-studio badge-piano" id="resGenreBadge">Piano</span>
+          </div>
+
+          <div class="row align-items-center g-4">
+            <div class="col-md-6">
+              <h5 id="resTrackTitle" class="fw-bold mb-1">generated_piano_track.mid</h5>
+              <div class="text-muted small mb-3">
+                <span id="resNotesCount">60 notes</span> • 
+                <span id="resDuration">24.5s</span> • 
+                <span id="resFilesize">1.2 KB</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn-studio btn-primary-gradient btn-sm-studio" id="resBtnPlayNow">
+                  <i class="fa-solid fa-play"></i> Play in Music Player
+                </button>
+                <a class="btn-studio btn-outline-studio btn-sm-studio" id="resBtnDownloadMidi" href="#" download>
+                  <i class="fa-solid fa-download"></i> Download MIDI
+                </a>
+                <a class="btn-studio btn-outline-studio btn-sm-studio" id="resBtnDownloadWav" href="#" download>
+                  <i class="fa-solid fa-file-waveform"></i> Download WAV
+                </a>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 bg-dark rounded border border-secondary">
+                <div class="text-muted small mb-1">Generated Notes Sample:</div>
+                <div id="resTokensList" class="d-flex flex-wrap gap-1" style="max-height: 80px; overflow-y: auto;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PAGE 6: MUSIC PLAYER
+           ========================================== -->
+      <section class="page-view" id="view-player">
+        <div class="player-container">
+          <!-- Player Header -->
+          <div class="player-header">
+            <div class="player-art" id="playerArtIcon">
+              <i class="fa-solid fa-music"></i>
+            </div>
+            <div class="player-meta">
+              <div class="badge-studio badge-piano mb-2" id="playerGenreBadge">Piano</div>
+              <h3 id="playerTrackTitle">No Track Selected</h3>
+              <p id="playerTrackMeta">Choose a track from the library or click Generate</p>
+            </div>
+          </div>
+
+          <!-- Waveform Visualizer -->
+          <div class="visualizer-canvas-container">
+            <canvas id="audioVisualizerCanvas"></canvas>
+          </div>
+
+          <!-- Progress Seek Bar -->
+          <div class="player-progress-area">
+            <input type="range" class="studio-range" id="playerSeekRange" min="0" max="100" value="0">
+            <div class="progress-time-display">
+              <span id="playerCurrentTime">0:00</span>
+              <span id="playerTotalTime">0:00</span>
+            </div>
+          </div>
+
+          <!-- Controls Bar -->
+          <div class="player-controls">
+            <!-- Playback buttons -->
+            <div class="playback-buttons">
+              <button class="btn-ctrl" id="btnPrevTrack" title="Previous Track">
+                <i class="fa-solid fa-backward-step"></i>
+              </button>
+              <button class="btn-ctrl btn-play" id="btnPlayPause" title="Play">
+                <i class="fa-solid fa-play" id="playPauseIcon"></i>
+              </button>
+              <button class="btn-ctrl" id="btnStopAudio" title="Stop">
+                <i class="fa-solid fa-stop"></i>
+              </button>
+              <button class="btn-ctrl" id="btnNextTrack" title="Next Track">
+                <i class="fa-solid fa-forward-step"></i>
+              </button>
+            </div>
+
+            <!-- Volume Control -->
+            <div class="volume-control">
+              <button class="btn-ctrl" id="btnMuteToggle" style="width: 36px; height: 36px;">
+                <i class="fa-solid fa-volume-high" id="volumeIcon"></i>
+              </button>
+              <input type="range" class="studio-range" id="volumeRange" min="0" max="1" step="0.05" value="0.85">
+            </div>
+
+            <!-- Direct File Downloads -->
+            <div class="d-flex gap-2">
+              <button class="btn-studio btn-outline-studio btn-sm-studio" id="btnPlayerDlMidi">
+                <i class="fa-solid fa-download"></i> MIDI
+              </button>
+              <button class="btn-studio btn-outline-studio btn-sm-studio" id="btnPlayerDlWav">
+                <i class="fa-solid fa-file-audio"></i> WAV
+              </button>
+            </div>
+          </div>
+
+          <!-- Virtual Piano Roll Visualizer -->
+          <div class="piano-roll-container">
+            <div class="text-muted small mb-2 d-flex justify-content-between">
+              <span>Virtual Studio Keyboard Visualizer</span>
+              <span id="activeNoteDisplay" class="text-info fw-bold">Active Note: None</span>
+            </div>
+            <div class="piano-keys" id="virtualPianoKeys">
+              <!-- Dynamically populated piano octave keys -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden Native Audio Element -->
+        <audio id="mainAudioElement" preload="metadata"></audio>
+      </section>
+
+      <!-- ==========================================
+           PAGE 7: DOWNLOAD HISTORY
+           ========================================== -->
+      <section class="page-view" id="view-history">
+        <div class="studio-card">
+          <div class="card-header-studio">
+            <div class="card-title-studio">
+              <i class="fa-solid fa-clock-rotate-left text-primary"></i> Generated Music History & Downloads
+            </div>
+            <button class="btn-studio btn-outline-studio btn-sm-studio" onclick="loadHistory()">
+              <i class="fa-solid fa-rotate-right"></i> Refresh Library
+            </button>
+          </div>
+          <p class="text-muted small mb-3">All generated compositions saved with notes, durations, and download links for both MIDI and WAV formats.</p>
+
+          <div class="table-responsive">
+            <table class="studio-table">
+              <thead>
+                <tr>
+                  <th>Track Name</th>
+                  <th>Genre</th>
+                  <th>Notes</th>
+                  <th>Duration</th>
+                  <th>Created</th>
+                  <th>Play</th>
+                  <th>Downloads</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <tr><td colspan="8" class="text-center text-muted">Loading history...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PAGE 8: ABOUT PROJECT
+           ========================================== -->
+      <section class="page-view" id="view-about">
+        <div class="studio-card mb-4">
+          <div class="card-header-studio">
+            <div class="card-title-studio">
+              <i class="fa-solid fa-graduation-cap text-cyan"></i> About AI Music Generator
+            </div>
+            <span class="badge-studio badge-piano">Deep Learning LSTM</span>
+          </div>
+          <p class="fs-6 leading-relaxed text-secondary mb-4">
+            <strong>AI Music Generator Using Deep Learning (LSTM)</strong> is an intelligent end-to-end web application that models polyphonic musical structures, harmonic chords, and melody progressions. Built with Python, Flask, Music21, PrettyMIDI, and Long Short-Term Memory (LSTM) Recurrent Neural Networks.
+          </p>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="p-4 bg-dark rounded border border-secondary h-100">
+                <h5 class="fw-bold text-info mb-3"><i class="fa-solid fa-brain"></i> Neural Network Architecture</h5>
+                <ul class="text-secondary small d-flex flex-column gap-2 mb-0" style="line-height: 1.6;">
+                  <li><strong>Recurrent Memory Cells:</strong> Dual hidden state $(h_t)$ and cell memory state $(C_t)$ retain long-term thematic coherence over sequences.</li>
+                  <li><strong>Triple Gating Mechanism:</strong> Forget gate $(f_t)$, Input gate $(i_t)$, and Output gate $(o_t)$ regulate melodic patterns.</li>
+                  <li><strong>Adam Optimization:</strong> Adaptive moment estimation ensures stable loss reduction through sequence gradients.</li>
+                  <li><strong>Temperature Sampling:</strong> Controls probability entropy to balance harmony and artistic creativity.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-4 bg-dark rounded border border-secondary h-100">
+                <h5 class="fw-bold text-primary mb-3"><i class="fa-solid fa-cubes"></i> Technology Stack</h5>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                  <span class="badge bg-secondary p-2">Python 3.14</span>
+                  <span class="badge bg-secondary p-2">Flask REST API</span>
+                  <span class="badge bg-secondary p-2">TensorFlow / Keras</span>
+                  <span class="badge bg-secondary p-2">NumPy & Pandas</span>
+                  <span class="badge bg-secondary p-2">music21</span>
+                  <span class="badge bg-secondary p-2">PrettyMIDI</span>
+                  <span class="badge bg-secondary p-2">FluidSynth</span>
+                  <span class="badge bg-secondary p-2">HTML5 / Web Audio API</span>
+                  <span class="badge bg-secondary p-2">Chart.js</span>
+                  <span class="badge bg-secondary p-2">Bootstrap 5</span>
+                </div>
+                <p class="text-muted small mb-0">
+                  Full polyphonic and monophonic synthesis pipeline with real-time waveform visualization in the browser.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Core Modules Workflow -->
+        <div class="studio-card">
+          <h4 class="fw-bold mb-3"><i class="fa-solid fa-diagram-project text-warning"></i> End-to-End System Pipeline</h4>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="p-3 bg-dark rounded border border-secondary">
+                <h6 class="text-info fw-bold">1. Dataset Collection</h6>
+                <p class="text-muted small mb-0">Multi-genre MIDI ingestion (Classical, Jazz, Piano, Instrumental) with pitch and instrument validation.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-dark rounded border border-secondary">
+                <h6 class="text-info fw-bold">2. Data Preprocessing</h6>
+                <p class="text-muted small mb-0">music21 stream extraction, chord dot-representation, duration quantization, and sequence windowing.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-dark rounded border border-secondary">
+                <h6 class="text-info fw-bold">3. LSTM Development</h6>
+                <p class="text-muted small mb-0">Multi-layer LSTM architecture with backpropagation through time and live loss visualization.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-dark rounded border border-secondary">
+                <h6 class="text-info fw-bold">4. AI Music Generation</h6>
+                <p class="text-muted small mb-0">Softmax temperature sampling generates original token sequences step-by-step from seed patterns.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-dark rounded border border-secondary">
+                <h6 class="text-info fw-bold">5. MIDI Conversion</h6>
+                <p class="text-muted small mb-0">Re-encodes generated tokens into music21 streams, assigns velocities and instruments, and exports .mid.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-dark rounded border border-secondary">
+                <h6 class="text-info fw-bold">6. Audio Synthesis & Playback</h6>
+                <p class="text-muted small mb-0">Renders WAV audio via FluidSynth and PrettyMIDI with interactive waveform and piano roll playback.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toast Notification Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Custom Application Scripts -->
+<script src="js/app.js"></script>
+
+</body>
+</html>
